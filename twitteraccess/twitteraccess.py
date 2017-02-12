@@ -1,3 +1,4 @@
+__name__ = "twitteraccess"
 __author__ = "sarah.kharimah"
 
 import tweepy
