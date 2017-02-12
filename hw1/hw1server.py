@@ -41,9 +41,12 @@ while 1:
     # Every time server gets input, send that input to Wolfram Alpha
     print(data)
     print ((data[0]))
-    res = wolfclient.query(data[0])
-    answer = next(res.results).text
-    mesanswer = makemessage(answer)
+    try:
+        res = wolfclient.query(data[0])
+        answer = next(res.results).text
+        mesanswer = makemessage(answer)
+    except:
+        mesanswer = makemessage("Unable to answer question.  Please try again")
     print(mesanswer)
 
     if mesanswer:
