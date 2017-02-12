@@ -2,6 +2,7 @@ __name__ = "twitteraccess"
 __author__ = "sarah.kharimah"
 
 import tweepy
+import json
 
 """
 Create class MyStreamListener inheriting from StreamListener to listen to stream and print status text.
@@ -10,10 +11,24 @@ Create class MyStreamListener inheriting from StreamListener to listen to stream
 :return: None
 
 """
+
+
 class MyStreamListener(tweepy.StreamListener):
+
+    counter = 0
+    text = ''
 
     def on_status(self, status):
         print(status.text)
+
+    def on_data(self, raw_data):
+        data_in_json = json.loads(raw_data)
+        self.counter = self.counter + 1
+        print(data_in_json['text'])
+        if self.counter > 0:
+            self.text = data_in_json['text']
+            send_tweet_to_timeline(get_twitter_api_handle(), data_in_json['text'])
+            return False
 
 
 """
@@ -53,7 +68,7 @@ Print the newest status message on public Twitter timeline to the console.
 """
 
 
-def get_most_recent_tweet(self, api_handle):
+def get_most_recent_tweet(api_handle):
     recent_tweet = None
     try:
         public_tweets = api_handle.home_timeline()
@@ -78,12 +93,11 @@ Print the newest status message on public Twitter timeline to the console.
 """
 
 
-def send_tweet_to_timeline(self, api_handle, new_status_message):
+def send_tweet_to_timeline(api_handle, new_status_message):
 
     try:
         api_handle.update_status(new_status_message)
-        recent_tweet = get_most_recent_tweet(self, api_handle)
-        print(recent_tweet)
+        print('Tweeted successfully')
         return True
     except Exception as err:
         print(err)
