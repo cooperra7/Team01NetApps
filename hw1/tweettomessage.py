@@ -7,7 +7,7 @@ import pickle
 import socket
 
 host = 'localhost'
-port = 4999
+port = 5000
 backlog = 5
 side = 1024
 

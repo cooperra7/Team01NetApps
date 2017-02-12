@@ -40,8 +40,9 @@ while 1:
 
     # Every time server gets input, send that input to Wolfram Alpha
     #input = data.decode()
-    print(inp)
-    res = wolfclient.query(inp)
+    print(data)
+    print ((data[0]))
+    res = wolfclient.query(data[0])
     answer = next(res.results).text
     #bytes = str.encode(answer)
     mesanswer = makemessage(answer)
