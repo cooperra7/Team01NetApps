@@ -39,15 +39,14 @@ while 1:
         print ("ERROR IN MESSAGE SENDING")
 
     # Every time server gets input, send that input to Wolfram Alpha
-    #input = data.decode()
     print(data)
     print ((data[0]))
     res = wolfclient.query(data[0])
     answer = next(res.results).text
-    #bytes = str.encode(answer)
     mesanswer = makemessage(answer)
     print(mesanswer)
 
-#    if mesanswer:
- #       client.send(answer.encode())
+    if mesanswer:
+        sendanswer = pickle.dumps(mesanswer)
+        client.send(sendanswer)
     client.close()

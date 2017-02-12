@@ -33,3 +33,7 @@ if re.match('.*?@tomswift ECE4564-Team01.*?', sys.argv[1]):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect ((host, port))
         s.send(r)
+        response = s.recv(1024)
+        data = pickle.loads(response)
+        print (data)
+        s.close()
