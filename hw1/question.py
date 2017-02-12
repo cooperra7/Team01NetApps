@@ -47,6 +47,6 @@ while 1:
     mesanswer = makemessage(answer)
     print(mesanswer)
 
-    if mesanswer:
-        client.send(answer.encode())
+#    if mesanswer:
+ #       client.send(answer.encode())
     client.close()
