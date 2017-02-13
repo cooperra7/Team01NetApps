@@ -14,6 +14,14 @@ port = 5000
 backlog = 5
 side = 1024
 
+def getmd5 (message):
+    m = hashlib.md5()
+    m.update(message.encode('utf-8'))
+    return m.hexdigest()
+
+def makemessage (message):
+    return (message, getmd5(message))
+
 """
 Create class MyStreamListener inheriting from StreamListener to listen to stream and saves the resulting tweet to a text file.
 
@@ -55,7 +63,7 @@ api = twitteraccess.get_twitter_api_handle()
 myStreamListener = MyStreamListener()
 myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
 
-result = myStream.filter(track=['@netapp_team01'])
+result = myStream.filter(track=['@netapp-team01'])
 
 question_tweet = get_question_tweet_from_file()         # question_tweet contains the retrieved tweet
 print("question tweet is this : " + question_tweet)     # prints retrieved tweet
@@ -67,19 +75,7 @@ msg = "here's a question : " + question_tweet
 End of Twitter Streaming API
 """
 
-if len(sys.argv) != 2:
-    print ("Usage: {} <message>".format(sys.argv[0]))
-    sys.exit(1)
-
-def getmd5 (message):
-    m = hashlib.md5()
-    m.update(message.encode('utf-8'))
-    return m.hexdigest()
-
-def makemessage (message):
-    return (message, getmd5(message))
-
-if re.match('.*?@tomswift ECE4564-Team01.*?', sys.argv[1]):
+if re.match('@netapp-team01.*?', sys.argv[1]):
     fields = sys.argv[1].split('_')
     if re.match('^[12]?[0-9]?[0-9]\.[12]?[0-9]?[0-9]\.[12]?[0-9]?[0-9]\.[12]?[0-9]?[0-9]:[1-6]?[0-9]?[0-9]?[0-9]?[0-9]$', fields[1]):
         q = makemessage(fields[2])
