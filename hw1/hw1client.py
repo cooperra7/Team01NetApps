@@ -63,20 +63,23 @@ api = twitteraccess.get_twitter_api_handle()
 myStreamListener = MyStreamListener()
 myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
 
-result = myStream.filter(track=['@netappTeam01'])
+result = myStream.filter(track=['@netappTeam01_'])
 
 question_tweet = get_question_tweet_from_file()         # question_tweet contains the retrieved tweet
 print("question tweet is this : " + question_tweet)     # prints retrieved tweet
 
-msg = "here's a question : " + question_tweet
+msg = question_tweet.split('_')
+
+print(msg)
+
 # twitteraccess.send_tweet_to_timeline(api_handle=api, new_status_message=msg) # use this to tweet new message
 
 """
 End of Twitter Streaming API
 """
 
-fields = sys.argv[1].split('_')
-q = makemessage(fields[2])
+fields = msg
+q = makemessage(fields[1])
 print ("{}".format(q))
 r = pickle.dumps(q)
 print("{}".format(r))
