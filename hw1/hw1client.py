@@ -59,34 +59,36 @@ def get_question_tweet_from_file():
 Twitter Streaming API
 """
 
-api = twitteraccess.get_twitter_api_handle()
-myStreamListener = MyStreamListener()
-myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
+while (1):
+    api = twitteraccess.get_twitter_api_handle()
+    myStreamListener = MyStreamListener()
+    myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
 
-result = myStream.filter(track=['@netappTeam01_'])
+    result = myStream.filter(track=['@netappTeam01_'])
 
-question_tweet = get_question_tweet_from_file()         # question_tweet contains the retrieved tweet
-print("question tweet is this : " + question_tweet)     # prints retrieved tweet
+    question_tweet = get_question_tweet_from_file()         # question_tweet contains the retrieved tweet
+    print("question tweet is this : " + question_tweet)     # prints retrieved tweet
 
-msg = question_tweet.split('_')
+    msg = question_tweet.split('_')
 
-print(msg)
+    print(msg)
 
-# twitteraccess.send_tweet_to_timeline(api_handle=api, new_status_message=msg) # use this to tweet new message
+    # twitteraccess.send_tweet_to_timeline(api_handle=api, new_status_message=msg) # use this to tweet new message
 
-"""
-End of Twitter Streaming API
-"""
+    """
+    End of Twitter Streaming API
+    """
 
-fields = msg
-q = makemessage(fields[1])
-print ("{}".format(q))
-r = pickle.dumps(q)
-print("{}".format(r))
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect ((host, port))
-s.send(r)
-response = s.recv(1024)
-data = pickle.loads(response)
-print (data)
-s.close()
+    fields = msg
+    q = makemessage(fields[1])
+    print ("{}".format(q))
+    r = pickle.dumps(q)
+    print("{}".format(r))
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect ((host, port))
+    s.send(r)
+    response = s.recv(1024)
+    data = pickle.loads(response)
+    print (data)
+    s.close()
+    twitteraccess.send_tweet_to_timeline(api_handle=api, new_status_message=data[0]) # use this to tweet new message
