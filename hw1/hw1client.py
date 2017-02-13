@@ -63,7 +63,7 @@ api = twitteraccess.get_twitter_api_handle()
 myStreamListener = MyStreamListener()
 myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
 
-result = myStream.filter(track=['@netapp-team01'])
+result = myStream.filter(track=['@netappTeam01'])
 
 question_tweet = get_question_tweet_from_file()         # question_tweet contains the retrieved tweet
 print("question tweet is this : " + question_tweet)     # prints retrieved tweet
@@ -75,17 +75,15 @@ msg = "here's a question : " + question_tweet
 End of Twitter Streaming API
 """
 
-if re.match('.*?@netapp_team01.*?', sys.argv[1]):
-    fields = sys.argv[1].split('_')
-    if re.match('^[12]?[0-9]?[0-9]\.[12]?[0-9]?[0-9]\.[12]?[0-9]?[0-9]\.[12]?[0-9]?[0-9]:[1-6]?[0-9]?[0-9]?[0-9]?[0-9]$', fields[1]):
-        q = makemessage(fields[2])
-        print ("{}".format(q))
-        r = pickle.dumps(q)
-        print("{}".format(r))
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect ((host, port))
-        s.send(r)
-        response = s.recv(1024)
-        data = pickle.loads(response)
-        print (data)
-        s.close()
+fields = sys.argv[1].split('_')
+q = makemessage(fields[2])
+print ("{}".format(q))
+r = pickle.dumps(q)
+print("{}".format(r))
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect ((host, port))
+s.send(r)
+response = s.recv(1024)
+data = pickle.loads(response)
+print (data)
+s.close()
