@@ -75,7 +75,7 @@ msg = "here's a question : " + question_tweet
 End of Twitter Streaming API
 """
 
-if re.match('@netapp-team01.*?', sys.argv[1]):
+if re.match('.*?@netapp_team01.*?', sys.argv[1]):
     fields = sys.argv[1].split('_')
     if re.match('^[12]?[0-9]?[0-9]\.[12]?[0-9]?[0-9]\.[12]?[0-9]?[0-9]\.[12]?[0-9]?[0-9]:[1-6]?[0-9]?[0-9]?[0-9]?[0-9]$', fields[1]):
         q = makemessage(fields[2])
