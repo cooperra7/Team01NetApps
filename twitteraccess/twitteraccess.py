@@ -2,33 +2,6 @@ __name__ = "twitteraccess"
 __author__ = "sarah.kharimah"
 
 import tweepy
-import json
-
-"""
-Create class MyStreamListener inheriting from StreamListener to listen to stream and print status text.
-
-:param: None
-:return: None
-
-"""
-
-
-class MyStreamListener(tweepy.StreamListener):
-
-    counter = 0
-    text = ''
-
-    def on_status(self, status):
-        print(status.text)
-
-    def on_data(self, raw_data):
-        data_in_json = json.loads(raw_data)
-        self.counter = self.counter + 1
-        print(data_in_json['text'])
-        if self.counter > 0:
-            self.text = data_in_json['text']
-            send_tweet_to_timeline(get_twitter_api_handle(), data_in_json['text'])
-            return False
 
 
 """
@@ -42,10 +15,10 @@ Authenticate OAuth authentication and get a tweepy API handle.
 
 def get_twitter_api_handle():
 
-    consumer_key = '2D09LEUICkWMvLgZauponx0PP'
-    consumer_secret = 'WHudhytJ88G1LizV5US7LS2yBKo9tIG32CKiXsvBr4JL5atbpk'
-    access_token = '828655445250289664-eyKXFCeEJwmWDeeVdVLbPy1CwtqzRRp'
-    access_token_secret = 'rRvtRknM2UdTtVdQqITwuGyDeX2caviTpswg67NGDgarN'
+    consumer_key = 'N2oJxmLqgiVmrMpTwpkPwbO25'
+    consumer_secret = 'l1U4FhXWCtzCdzP0iYZri3KVWH5mm6xXNxHbzFV2Cz2eK2pQx8'
+    access_token = '830957663366287365-g4fZE6kWMjqVv6PkBkBuPzRXpWtOhhO'
+    access_token_secret = 'E9nhhLnP75Pc7dC3bODyvrNomFcONHQj05Tciy2HNN6rB'
 
     try:
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -71,7 +44,7 @@ Print the newest status message on public Twitter timeline to the console.
 def get_most_recent_tweet(api_handle):
     recent_tweet = None
     try:
-        public_tweets = api_handle.home_timeline()
+        public_tweets = api_handle.user_timeline()
         for tweet in public_tweets:
             recent_tweet = tweet.text
         print(recent_tweet)
