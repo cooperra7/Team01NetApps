@@ -9,10 +9,10 @@ import tweepy
 import twitteraccess
 import json
 
-host = 'localhost'
-port = 5000
+host = '172.31.186.170'
+port = 54321
 backlog = 5
-side = 1024
+size = 1024
 
 def getmd5 (message):
     m = hashlib.md5()

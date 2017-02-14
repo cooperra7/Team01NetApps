@@ -9,7 +9,7 @@ import tweepy
 import twitteraccess
 import json
 
-host = '172.25.235.3'
+host = '172.31.186.170'
 port = 5000
 backlog = 5
 side = 1024
@@ -54,7 +54,7 @@ while(1):
         myStreamListener = MyStreamListener()
         myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
 
-        result = myStream.filter(track=['@netapp_team01'])
+        result = myStream.filter(track=['@netappTeam01'])
 
         question_tweet = get_question_tweet_from_file()         # question_tweet contains the retrieved tweet
         print("question tweet is this : " + question_tweet)     # prints retrieved tweet
@@ -96,4 +96,4 @@ while(1):
         print (data[0])
         twitteraccess.send_tweet_to_timeline(api_handle=api, new_status_message=data[0])
         ready = 1
-    s.close()
+        s.close()

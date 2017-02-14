@@ -7,8 +7,8 @@ import hashlib
 import pickle
 
 # Variables for server
-host = 'localhost'
-port = 5000
+host = ''
+port = 54321
 backlog = 5
 size = 1024
 
