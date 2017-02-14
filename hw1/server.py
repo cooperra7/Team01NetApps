@@ -35,19 +35,20 @@ while 1:
     sdata = client.recv(size)
     
     data = pickle.loads(sdata)
-    if (data[1] != getmd5(data[0])):
-        print ("ERROR IN MESSAGE SENDING")
-
-    # Every time server gets input, send that input to Wolfram Alpha
-    print(data)
-    print ((data[0]))
     try:
+        if (data[1] != getmd5(data[0])):
+            print ("ERROR IN MESSAGE SENDING")
+            raise
+
+        # Every time server gets input, send that input to Wolfram Alpha
+        print("Received tuple: {}".format(data))
+        print ("Received Question: {}".format(data[0]))
         res = wolfclient.query(data[0])
         answer = next(res.results).text
         mesanswer = makemessage(answer)
     except:
         mesanswer = makemessage("Unable to answer question.  Please try again")
-    print(mesanswer)
+    print("Answer tuple: {}".format(mesanswer))
 
     if mesanswer:
         sendanswer = pickle.dumps(mesanswer)

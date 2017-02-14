@@ -8,8 +8,9 @@ import socket
 import tweepy
 import twitteraccess
 import json
+import random
 
-host = '172.31.186.170'
+host = 'localhost'
 port = 54321
 backlog = 5
 size = 1024
@@ -31,7 +32,7 @@ Create class MyStreamListener inheriting from StreamListener to listen to stream
 class MyStreamListener(tweepy.StreamListener):
 
     def on_status(self, status):
-        print(status.text)
+        print("Twitter status: {}".format(status.text))
 
     def on_data(self, raw_data):
         data_in_json = json.loads(raw_data)
@@ -71,9 +72,8 @@ while (1):
 
     msg = question_tweet.split('_')
 
-    print(msg)
+    print("Caught tweet: {}".format(msg))
 
-    # twitteraccess.send_tweet_to_timeline(api_handle=api, new_status_message=msg) # use this to tweet new message
 
     """
     End of Twitter Streaming API
@@ -81,14 +81,24 @@ while (1):
 
     fields = msg
     q = makemessage(fields[1])
-    print ("{}".format(q))
+    print ("Tuple message: {}".format(q))
     r = pickle.dumps(q)
-    print("{}".format(r))
+    print("Pickled tuple: {}".format(r))
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect ((host, port))
     s.send(r)
     response = s.recv(1024)
     data = pickle.loads(response)
-    print (data)
+    print ("Tuple response: {}".format(data))
     s.close()
-    twitteraccess.send_tweet_to_timeline(api_handle=api, new_status_message='@VTNetApps Team_01"{}"'.format(data[0])) # use this to tweet new message
+    if (data[1] != getmd5(data[0])):
+        print ("ERROR IN MESSAGE RECEIPT")
+        break
+    answers = data[0].split('\n')
+    for i in answers:
+        if len(i) > 125:
+            s = i[0:125]
+        else:
+            s = i
+        print ("Tweeting: {}".format(s))
+        twitteraccess.send_tweet_to_timeline(api_handle=api, new_status_message='@VTNetApps Team_01 "{}" {}'.format(s, random.randrange(0,1000))) # use this to tweet new message
