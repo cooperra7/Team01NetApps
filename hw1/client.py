@@ -10,7 +10,7 @@ import twitteraccess
 import json
 import random
 
-host = 'localhost'
+host = '172.29.62.176'
 port = 54321
 backlog = 5
 size = 1024
