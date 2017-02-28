@@ -1,9 +1,8 @@
-#!/usr/bin/python
-
 import sys
 import getopt
 import pymongo
 import json
+import pika
 
 def main(argv):
     message_broker = ''
@@ -37,19 +36,21 @@ def main(argv):
             routing_key = arg
             print(routing_key)
     if login_and_password == '':
-        login_and_password = 'guest'
+        login_and_password = ''
+        login = 'guest'
+        password = 'guest'
+    if virtual_host == '':
+        virtual_host = '/'
 
-    creds = pika.PlainCredentials (login, password)
-    params = pika.ConnectionParameters (virtual_host=virtual_host, credentials=creds, host=message_broker)
-    connection = pika.BlockingConnection (params)
-    channel = connection.channel()
-    channel.exchange_declare (exchange='pi_utilization', type='direct')
-
-    ##creds = pika.PlainCredentials ('cooperra', 'cooperrapassword')
-    #params = pika.ConnectionParameters (virtual_host='netappTeam01', credentials=creds, host='198.82.59.146')
-    #connection = pika.BlockingConnection (params)
-    #channel = connection.channel()
-    #channel.exchange_declare (exchange='pi_utilization', type='direct')
+    try:
+        creds = pika.PlainCredentials (login, password)
+        params = pika.ConnectionParameters (virtual_host=virtual_host, credentials=creds, host=message_broker)
+        connection = pika.BlockingConnection (params)
+        channel = connection.channel()
+        channel.exchange_declare (exchange='pi_utilization', type='direct')
+    except:
+        print ('Failed to connect to server. Please try again.')
+        sys.exit(3)
 
     result = channel.queue_declare (exclusive=True)
     qname = result.method.queue
@@ -58,12 +59,14 @@ def main(argv):
     channel.queue_bind (exchange='pi_utilization', queue=qname, routing_key='host2')
 
     def callback (ch, method, properties, body):
-        stats = body
-        dbupdate(stats)
+        stats = json.loads(body.decode('utf-8'))
+        print (type(stats))
+        dbupdate(stats, method.routing_key)
 
 
-    def dbupdate (stats)
+    def dbupdate (stats, route):
         # Variables to store data
+        
         current_cpu = ''
         high_cpu = ''
         low_cpu = ''
@@ -85,6 +88,8 @@ def main(argv):
         eth0_low_rx = ''
         eth0_high_tx = ''
         eth0_low_tx = ''
+
+        
 
         # Connects to Mongo, must run the Mongo server before running this file
         client = pymongo.MongoClient("localhost", 27017)
@@ -215,6 +220,7 @@ def main(argv):
         eth0_current_rx = parse_eth0["rx"]
 
         # Prints the necessary output messages
+        print(route)
         print("cpu: " + str(current_cpu) + " [Hi: " + str(high_cpu) + ", Lo: " + str(low_cpu) + "]")
         print("lo: rx=" + str(lo_current_rx) + " B/s" + " [Hi: " + str(lo_high_rx) + " B/s, Lo: " + str(lo_low_rx) + " B/s], tx=" +
               str(lo_current_tx) + " B/s" + " [Hi: " + str(lo_high_tx) + " B/s, Lo: " + str(lo_low_tx) + " B/s]")
