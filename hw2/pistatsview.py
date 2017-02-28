@@ -6,16 +6,19 @@ import pika
 import RPi.GPIO as GPIO
 
 def main(argv):
+    #setup of GPIO for LED use
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     GPIO.setup(25,GPIO.OUT)
     GPIO.setup(24,GPIO.OUT)
+
     message_broker = ''
     virtual_host = ''
     login_and_password = ''
     login = ''
     password = ''
-    routing_key = ''
+
+    #collect argument data for connecting to the message broker
     if len(sys.argv) < 2:
         print('usage: pistatsview –b message broker [–p virtual host] [–c login:password] –k routing key')
         sys.exit(2)
@@ -41,12 +44,12 @@ def main(argv):
             routing_key = arg
             print(routing_key)
     if login_and_password == '':
-        login_and_password = ''
         login = 'guest'
         password = 'guest'
     if virtual_host == '':
         virtual_host = '/'
 
+    #connect to the message broker
     try:
         creds = pika.PlainCredentials (login, password)
         params = pika.ConnectionParameters (virtual_host=virtual_host, credentials=creds, host=message_broker)
@@ -63,6 +66,7 @@ def main(argv):
     channel.queue_bind (exchange='pi_utilization', queue=qname, routing_key='host1')
     channel.queue_bind (exchange='pi_utilization', queue=qname, routing_key='host2')
 
+    #retrieves the data from the message broker
     def callback (ch, method, properties, body):
         stats = json.loads(body.decode('utf-8'))
         print (type(stats))
@@ -70,42 +74,17 @@ def main(argv):
 
 
     def dbupdate (stats, route):
-        # Variables to store data
-        
-        current_cpu = ''
-        high_cpu = ''
-        low_cpu = ''
-        lo_current_rx = ''
-        lo_current_tx = ''
-        lo_high_rx = ''
-        lo_low_rx = ''
-        lo_high_tx = ''
-        lo_low_tx = ''
-        wlan0_current_rx = ''
-        wlan0_current_tx = ''
-        wlan0_high_rx = ''
-        wlan0_low_rx = ''
-        wlan0_high_tx = ''
-        wlan0_low_tx = ''
-        eth0_current_rx = ''
-        eth0_current_tx = ''
-        eth0_high_rx = ''
-        eth0_low_rx = ''
-        eth0_high_tx = ''
-        eth0_low_tx = ''
 
-        
+        try:
+            # Connects to Mongo, must run the Mongo server before running this file
+            client = pymongo.MongoClient("localhost", 27017)
+            db = client.test
+            db = pymongo.MongoClient().test
+        except:
+            print ('Failed to connect to Mongo database')
+            sys.exit(3)
 
-        # Connects to Mongo, must run the Mongo server before running this file
-        client = pymongo.MongoClient("localhost", 27017)
-        db = client.test
-        db = pymongo.MongoClient().test
-
-        # test jsons
-        #stats = {"net": {"lo": {"rx": 0, "tx": 4}, "wlan0":{"rx": 78, "tx": 192}, "eth0": {"rx": 10, "tx": 50}},
-         #        "cpu": 0.2771314211797171}
-
-        #inserts test jsons
+        #inserts jsons
         db.utilization.insert(stats)
 
         # Gets current value for CPU
@@ -234,6 +213,7 @@ def main(argv):
         print("eth0: rx=" + str(eth0_current_rx) + " B/s" + " [Hi: " + str(eth0_high_rx) + " B/s, Lo: " + str(eth0_low_rx) + " B/s], tx=" +
               str(eth0_current_tx) + " B/s" + " [Hi: " + str(eth0_high_tx) + " B/s, Lo: " + str(eth0_low_tx) + " B/s]")
 
+        # produces the proper color of LED in regards to cpu usage
         if float(current_cpu) < .25:
             GPIO.output(24,GPIO.HIGH)
             GPIO.output(25,GPIO.LOW)
@@ -243,7 +223,8 @@ def main(argv):
         else:
             GPIO.output(25,GPIO.HIGH)
             GPIO.output(24,GPIO.LOW)
-        
+
+    #initiates and continues to collect data from the queue
     channel.basic_consume (callback, queue=qname, no_ack=True)
     channel.start_consuming ()
 

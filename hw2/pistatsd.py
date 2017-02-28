@@ -15,6 +15,8 @@ def main(argv):
     login = ''
     password = ''
     routing_key = ''
+
+    #collects argument data to connect to message broker
     if len(sys.argv) < 2:
         print('usage: pistatsd –b message broker [–p virtual host] [–c login:password] –k routing key')
         sys.exit(2)
@@ -43,6 +45,7 @@ def main(argv):
         login = 'guest'
         password = 'guest'
 
+    #connects to message broker
     try:
         creds = pika.PlainCredentials (login, password)
         params = pika.ConnectionParameters (virtual_host=virtual_host, credentials=creds, host=message_broker)
@@ -55,13 +58,13 @@ def main(argv):
 
     last_idle = last_total = 0
 
-
+    #acquires usage data to be used in usage calculations
     def get_network_rx_tx_bytes():
         network_bytes_list = []
 
         receive_eth0_bytes = transmit_eth0_bytes = 0
         receive_lo_bytes = transmit_lo_bytes = 0
-        receive_eth0_bytes = transmit_wlan0_bytes = 0
+        receive_wlan0_bytes = transmit_wlan0_bytes = 0
 
         with open('/proc/net/dev') as d:
             for line in d:
@@ -105,6 +108,7 @@ def main(argv):
         network_bytes_list_prev = network_bytes_list
         network_bytes_list = get_network_rx_tx_bytes()
 
+        #calculates usage values
         wlan0_rx_throughput = (int(network_bytes_list[0]) - int(network_bytes_list_prev[0])) / total_delta
         wlan0_tx_throughput = (int(network_bytes_list[1]) - int(network_bytes_list_prev[1])) / total_delta
         lo_rx_throughput = (int(network_bytes_list[2]) - int(network_bytes_list_prev[2])) / total_delta
@@ -112,6 +116,7 @@ def main(argv):
         eth0_rx_throughput = (int(network_bytes_list[4]) - int(network_bytes_list_prev[4])) / total_delta
         eth0_tx_throughput = (int(network_bytes_list[5]) - int(network_bytes_list_prev[5])) / total_delta
 
+        #changes the data into JSON format
         data_dict = {"net": {"lo": {"rx": lo_rx_throughput, "tx": lo_tx_throughput},
                              "wlan0": {"rx": wlan0_rx_throughput, "tx": wlan0_tx_throughput},
                              "eth0": {"rx": eth0_rx_throughput, "tx": eth0_tx_throughput}},
@@ -121,6 +126,7 @@ def main(argv):
         json_data = json.dumps(data_dict, sort_keys=True, indent=4, separators=(',', ':'), ensure_ascii=False)
         print(json_data)
 
+        #sends the data to the message broker
         channel.basic_publish (exchange='pi_utilization', routing_key=routing_key, body=json_data)
 
     connection.close()
