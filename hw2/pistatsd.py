@@ -31,23 +31,27 @@ def main(argv):
             message_broker = arg
         elif opt in "-p":
             virtual_host = arg
-            print(virtual_host)
+            print("vhost: {}".format(virtual_host))
         elif opt in "-c":
             login_and_password = arg
             login,password = login_and_password.split(":")            
-            print(login_and_password)
+            print("creds: {}".format(login_and_password))
         elif opt in "-k":
             routing_key = arg
             print(routing_key)
     if login_and_password == '':
-        login_and_password = 'guest'
+        login = 'guest'
+        password = 'guest'
 
-    creds = pika.PlainCredentials (login, password)
-    params = pika.ConnectionParameters (virtual_host=virtual_host, credentials=creds, host=message_broker)
-    connection = pika.BlockingConnection (params)
-    channel = connection.channel()
-    channel.exchange_declare (exchange='pi_utilization', type='direct')
-
+    try:
+        creds = pika.PlainCredentials (login, password)
+        params = pika.ConnectionParameters (virtual_host=virtual_host, credentials=creds, host=message_broker)
+        connection = pika.BlockingConnection (params)
+        channel = connection.channel()
+        channel.exchange_declare (exchange='pi_utilization', type='direct')
+    except:
+        print ("Failed to connect to RabbitMQ server. Please try again.")
+        sys.exit(3)
 
     last_idle = last_total = 0
 
