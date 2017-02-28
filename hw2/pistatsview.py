@@ -234,13 +234,13 @@ def main(argv):
         print("eth0: rx=" + str(eth0_current_rx) + " B/s" + " [Hi: " + str(eth0_high_rx) + " B/s, Lo: " + str(eth0_low_rx) + " B/s], tx=" +
               str(eth0_current_tx) + " B/s" + " [Hi: " + str(eth0_high_tx) + " B/s, Lo: " + str(eth0_low_tx) + " B/s]")
 
-        if current_cpu < .25
+        if float(current_cpu) < .25:
             GPIO.output(24,GPIO.HIGH)
             GPIO.output(25,GPIO.LOW)
-        elif current_cpu >= .25 && current_cpu <= .50
+        elif float(current_cpu) >= .25 and float(current_cpu) <= .50:
             GPIO.output(24,GPIO.HIGH)
             GPIO.output(25,GPIO.HIGH)
-        else
+        else:
             GPIO.output(25,GPIO.HIGH)
             GPIO.output(24,GPIO.LOW)
         
