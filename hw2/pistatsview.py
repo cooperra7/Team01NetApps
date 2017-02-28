@@ -36,6 +36,21 @@ def main(argv):
     if login_and_password == '':
         login_and_password = 'guest'
 
+    creds = pika.PlainCredentials ('cooperra', 'cooperrapassword')
+    params = pika.ConnectionParameters (virtual_host='netappTeam01', credentials=creds, host='198.82.59.146')
+    connection = pika.BlockingConnection (params)
+    channel = connection.channel()
+    channel.exchange_declare (exchange='pi_utilization', type='direct')
+
+    result = channel.queue_declare (exclusive=True)
+    qname = result.method.queue
+
+    channel.queue_bind (exchange='pi_utilization', queue=qname, routing_key='host1')
+    channel.queue_bind (exchange='pi_utilization', queue=qname, routing_key='host2')
+
+    def callback (ch, method, properties, body):
+        stats = body
+
     # Variables to store data
     current_cpu = ''
     high_cpu = ''
