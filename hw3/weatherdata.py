@@ -1,6 +1,6 @@
 import requests, json
 zip = '24060'
-payload = {'zip':zip,'APPID':'a336a6c918103af9bd7045bf9304caa3'}
+payload = {'zip':zip,'APPID':'a336a6c918103af9bd7045bf9304caa3','cnt':'15'}
 r = requests.get('http://api.openweathermap.org/data/2.5/forecast?us', params=payload)
 
 response = r.json()
