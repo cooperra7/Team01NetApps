@@ -89,6 +89,9 @@ def main(argv):
     zipcode = '24060'
     norad_id = '25544'
     events = []
+    tle_line0 = ''
+    tle_line1 = ''
+    tle_line2 = ''
 
     if len(sys.argv) < 2:
         print('usage: icu -z zipcode -s norad id')
@@ -144,6 +147,8 @@ def main(argv):
         tle_line1 = tle_results[index].get('TLE_LINE1')
         tle_line2 = tle_results[index].get('TLE_LINE2')
 
+    print(tle_line0)
+
     satellite = ephem.readtle(str(tle_line0), tle_line1, tle_line2)
     print
 
@@ -160,12 +165,12 @@ def main(argv):
         tr, azr, tt, altt, ts, azs = obs.next_pass(satellite)
         unixTime = time.mktime(tr.datetime().timetuple())
         if int(dateTimeCloudiness(int(unixTime), r_load2)) <= 20:
-            events.append("%s | %4.1f     | %5.1f     | %s" % (tr, math.degrees(satellite.alt), math.degrees(satellite.az), (ts - tr) * 60 * 60 * 24))
+            events.append('{s} | {2:.1f}     | {3:.1f}     | {s}'.format(tr, math.degrees(satellite.alt), math.degrees(satellite.az), (ts - tr) * 60 * 60 * 24))
             p = p+1
         while tr < ts:
             obs.date = tr
             satellite.compute(obs)
-            print "%s %4.1f %5.1f" % (tr, math.degrees(satellite.alt), math.degrees(satellite.az))
+            print ('{s} {2:.1f} {3:.1f}'.format(tr, math.degrees(satellite.alt), math.degrees(satellite.az)))
             tr = ephem.Date(tr + 60.0 * ephem.second)
         print
         obs.date = tr + ephem.minute
@@ -175,7 +180,7 @@ def main(argv):
     m = 0
     try:
         for k in range(5):
-            print str(events[k])
+            print( str(events[k]))
             m = m+1
     except:
         print("There are less than 5 viewable events in the next 15 days")
