@@ -10,7 +10,7 @@ from datetime import date
 from datetime import timedelta
 import time
 from twilio.rest import TwilioRestClient
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 import ephem
 import math
 
@@ -22,9 +22,11 @@ def get_tle_results(norad_id):
     login_url = base_url + 'ajaxauth/login'
 
     d = datetime.today()
-    d1 = d - timedelta(days=1)
+    d1 = d - timedelta(days=2)
     dstr = d.strftime("%Y-%m-%d")
     d1str = d1.strftime("%Y-%m-%d")
+
+    print('test')
 
     query = base_url + "/basicspacedata/query/class/tle/NORAD_CAT_ID/" + \
             norad_id + \
@@ -63,28 +65,28 @@ def notifyme (sattime):
     myTwilioNumber = '+17575097597'
     myCellPhone = '+17572433632'
     message = twilioCli.messages.create (body='Satellite incoming at {}'.format(sattime), from_=myTwilioNumber, to=myCellPhone)
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
-    GPIO.setup(25,GPIO.OUT)
-    GPIO.setup(24,GPIO.OUT)
+#    GPIO.setmode(GPIO.BCM)
+#    GPIO.setwarnings(False)
+#    GPIO.setup(25,GPIO.OUT)
+#    GPIO.setup(24,GPIO.OUT)
 
-    while (ephem.Date(datetime.now()) < sattime):
-        subprocess.Popen(['/usr/bin/aplay', './beep-01.wav'])
+#    while (ephem.Date(datetime.now()) < sattime):
+ #       subprocess.Popen(['/usr/bin/aplay', './beep-01.wav'])
 #       print("on")
-        GPIO.output(25,GPIO.HIGH)
-        GPIO.output(24,GPIO.HIGH)
-        time.sleep(1)
+#        GPIO.output(25,GPIO.HIGH)
+#        GPIO.output(24,GPIO.HIGH)
+#        time.sleep(1)
 #       print ("off")
-        GPIO.output(25,GPIO.LOW)
-        GPIO.output(24,GPIO.LOW)
-        time.sleep(1)
+#        GPIO.output(25,GPIO.LOW)
+#        GPIO.output(24,GPIO.LOW)
+#        time.sleep(1)
 
 def main(argv):
     #setup of GPIO for LED use
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
-    GPIO.setup(25,GPIO.OUT)
-    GPIO.setup(24,GPIO.OUT)
+#    GPIO.setmode(GPIO.BCM)
+#    GPIO.setwarnings(False)
+#    GPIO.setup(25,GPIO.OUT)
+#    GPIO.setup(24,GPIO.OUT)
 
     zipcode = '24060'
     norad_id = '25544'
@@ -147,7 +149,7 @@ def main(argv):
         tle_line1 = tle_results[index].get('TLE_LINE1')
         tle_line2 = tle_results[index].get('TLE_LINE2')
 
-    print(tle_line0)
+    print(tle_results)
 
     satellite = ephem.readtle(str(tle_line0), tle_line1, tle_line2)
     print
@@ -165,12 +167,12 @@ def main(argv):
         tr, azr, tt, altt, ts, azs = obs.next_pass(satellite)
         unixTime = time.mktime(tr.datetime().timetuple())
         if int(dateTimeCloudiness(int(unixTime), r_load2)) <= 20:
-            events.append('{s} | {2:.1f}     | {3:.1f}     | {s}'.format(tr, math.degrees(satellite.alt), math.degrees(satellite.az), (ts - tr) * 60 * 60 * 24))
+            events.append('{0} | {1:.1f}     | {2:.1f}     | {3}'.format(tr, math.degrees(satellite.alt), math.degrees(satellite.az), (ts - tr) * 60 * 60 * 24))
             p = p+1
         while tr < ts:
             obs.date = tr
             satellite.compute(obs)
-            print ('{s} {2:.1f} {3:.1f}'.format(tr, math.degrees(satellite.alt), math.degrees(satellite.az)))
+            print ('{0} {1:.1f} {2:.1f}'.format(tr, math.degrees(satellite.alt), math.degrees(satellite.az)))
             tr = ephem.Date(tr + 60.0 * ephem.second)
         print
         obs.date = tr + ephem.minute
