@@ -1,9 +1,11 @@
 import requests, json
+
 zip = '24060'
-payload = {'zip':zip,'APPID':'a336a6c918103af9bd7045bf9304caa3'}
-r = requests.get('http://api.openweathermap.org/data/2.5/forecast?us', params=payload)
+payload = {'zip':zip,'cnt':'15','APPID':'a336a6c918103af9bd7045bf9304caa3'}
+r = requests.get('http://api.openweathermap.org/data/2.5/forecast/daily?us', params=payload)
 
 response = r.json()
+#print(json.dumps(response,skipkeys=True,indent=4))
 r_json = json.dumps(response['city'])
 r_load = json.loads(r_json)
 r_coord = json.dumps(r_load['coord'])
@@ -17,12 +19,17 @@ latitude = json.dumps(r_coord_load['lat'])
 
 r_json2 = json.dumps(response['list'])
 r_load2 = json.loads(r_json2)
-r_weather = json.dumps(r_load2[0])
-r_clouds_load = json.loads(r_weather)
-r_clouds = json.dumps(r_clouds_load['clouds'])
-r_all_load = json.loads(r_clouds)
 
-# the cloudiness percentage
-r_all = json.dumps(r_all_load['all'])
 
-print(response)
+
+def dateTimeCloudiness(dt_string, response_list):
+
+    for num in response_list:
+
+        if num['dt'] == dt_string:
+            r_dump = json.dumps(num['clouds'])
+            r_load = json.loads(r_dump)
+            return r_dump
+
+
+print(dateTimeCloudiness(1491670800, r_load2))
