@@ -16,9 +16,9 @@ row_complete = 0
 
         
 class LocationResource (resource.Resource):
-
+    
     token_id = 0
-    x = 0;
+    x = 0
     def __init__(self):
         super(LocationResource, self).__init__()
         self.content = (0,0,0,0,0)
@@ -38,6 +38,7 @@ class LocationResource (resource.Resource):
         else:
             self.token_id += 1
         self.x += 1
+        global row_complete
         if (self.x <= 10):
             self.content = (1 + self.content[0],self.content[1], self.content[2], self.token_id, self.x)
             mc.setBlock(self.content[0], self.content[1], self.content[2], block.DIRT.id)
@@ -46,14 +47,19 @@ class LocationResource (resource.Resource):
             print ('Content: {}'.format(self.content))
             payload = pickle.dumps ('POST request received to place block at {}'.format (p))
             return aiocoap.Message (payload=payload)
-        else:
-            self.x = 0
-            self.content = (self.content[0], 1 + self.content[1], self.content[2], self.token_id, self.content[4])
+        elif (row_complete < 1):
+            self.x = 1
+            row_complete += 1
+            self.content = (self.content[0] - 9, 1 + self.content[1], self.content[2], self.token_id, self.content[4])
             mc.setBlock(self.content[0], self.content[1], self.content[2], block.DIRT.id)
             mc.player.setPos(self.content[0], self.content[1], self.content[2])
             mc.postToChat('Block placed at ' + str(self.content[0]) + ' ' + str(self.content[1]) + ' ' + str(self.content[2]))
             print ('Content: {}'.format(self.content))
             payload = pickle.dumps ('POST request received to place block at {}'.format (p))
+            return aiocoap.Message (payload=payload)
+        else:
+            print('Content: {}'.format(self.content))
+            payload = pickle.dumps ('Wall is done')
             return aiocoap.Message (payload=payload)
 
 def main ():
