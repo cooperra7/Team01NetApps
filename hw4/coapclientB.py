@@ -27,7 +27,7 @@ async def main():
             token_id = r[3]
 
             if token_id == 1:
-                newLoc = (0, 0, 1 + r[2], token_id)
+                newLoc = (r[0], r[1], 1 + r[2], token_id)
                 postPayload = pickle.dumps(newLoc)
                 postRequest = Message(code=POST, payload=postPayload)
                 postRequest.opt.uri_host = 'localhost'
