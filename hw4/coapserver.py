@@ -26,7 +26,7 @@ class LocationResource (resource.Resource):
         p = pickle.loads (request.payload)
         print ('POST: {}'.format (p))
         self.content = (0,0,1+self.content[2])
-        mc.setBlock(self.content[0], self.content[1], self.content[2],block.DIRT.id)
+        mc.setBlock(self.content ,block.DIRT.id)
         print ('Content: {}'.format(self.content))
         payload = pickle.dumps ('POST request received to place block at {}'.format (p))
         return aiocoap.Message (payload=payload)
