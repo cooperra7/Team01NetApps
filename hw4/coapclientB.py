@@ -14,7 +14,7 @@ async def main():
     protocol = await Context.create_client_context()
 
     while (1):
-        time.sleep(1)
+        time.sleep(5)
         getRequest = Message(code=GET, uri='coap://' + sys.argv[1] + '/location')
 
         try:
@@ -25,9 +25,9 @@ async def main():
             r = pickle.loads(response.payload)
             print('location at {}'.format(r))
             token_id = r[3]
-
+            x = r[4]
             if token_id == 1:
-                newLoc = (r[0], r[1], 1 + r[2], token_id)
+                newLoc = (r[0], r[1], r[2], token_id, x)
                 postPayload = pickle.dumps(newLoc)
                 postRequest = Message(code=POST, payload=postPayload)
                 postRequest.opt.uri_host = 'localhost'
