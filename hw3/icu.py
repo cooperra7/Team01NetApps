@@ -55,28 +55,28 @@ def get_tle_results(norad_id):
     return tle_data_list
 
 def notifyme (sattime):
-    while (ephem.Date(datetime.now() + timedelta(minutes = 1000)) < sattime):
+    while (ephem.Date(datetime.now() + timedelta(days = 5)) < sattime):
         time.sleep(1)
 
 # send a text message to the user
-    accountSID = 'AC1de3fd4a6b571ac161acc2ac3498bdde'
-    authToken = '5ea6af71b2aa12a80c5b18d9dbf1486a'
-    twilioCli = TwilioRestClient (accountSID, authToken)
-    myTwilioNumber = '+17575097597'
-    myCellPhone = '+17572433632'
-    message = twilioCli.messages.create (body='Satellite incoming at {}'.format(sattime), from_=myTwilioNumber, to=myCellPhone)
+#    accountSID = 'AC1de3fd4a6b571ac161acc2ac3498bdde'
+#    authToken = '5ea6af71b2aa12a80c5b18d9dbf1486a'
+#    twilioCli = TwilioRestClient (accountSID, authToken)
+#    myTwilioNumber = '+17575097597'
+#    myCellPhone = '+17572433632'
+#    message = twilioCli.messages.create (body='Satellite incoming at {}'.format(sattime), from_=myTwilioNumber, to=myCellPhone)
 #    GPIO.setmode(GPIO.BCM)
 #    GPIO.setwarnings(False)
 #    GPIO.setup(25,GPIO.OUT)
 #    GPIO.setup(24,GPIO.OUT)
 
-#    while (ephem.Date(datetime.now()) < sattime):
- #       subprocess.Popen(['/usr/bin/aplay', './beep-01.wav'])
-#       print("on")
+    while (ephem.Date(datetime.now()) < sattime):
+        subprocess.Popen(['/usr/bin/aplay', './beep-01.wav'])
+        print("on")
 #        GPIO.output(25,GPIO.HIGH)
 #        GPIO.output(24,GPIO.HIGH)
 #        time.sleep(1)
-#       print ("off")
+        print ("off")
 #        GPIO.output(25,GPIO.LOW)
 #        GPIO.output(24,GPIO.LOW)
 #        time.sleep(1)
@@ -163,12 +163,14 @@ def main(argv):
     getForecast(r_load2)
     print
     p = 0
+    sattimes = []
     while p < 5:
         tr, azr, tt, altt, ts, azs = obs.next_pass(satellite)
         unixTime = time.mktime(tr.datetime().timetuple())
         if int(dateTimeCloudiness(int(unixTime), r_load2)) <= 20:
             events.append('{0} | {1:.1f}     | {2:.1f}     | {3}'.format(tr, math.degrees(satellite.alt), math.degrees(satellite.az), (ts - tr) * 60 * 60 * 24))
             p = p+1
+            sattimes.append(ephem.Date(tr))
         while tr < ts:
             obs.date = tr
             satellite.compute(obs)
@@ -192,7 +194,8 @@ def main(argv):
         sys.exit(1)
 
     for k in range(m):
-        notifyme (events[k])
+        notifyme (sattimes[k])
+        print(events[k])
         print('Message sent')
 
 if __name__ == "__main__":
