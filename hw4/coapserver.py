@@ -8,8 +8,11 @@ import sys
 import mcpi.minecraft as minecraft
 import mcpi.block as block
 
-#Global Variable for Minecraft Connection
+# Global Variable for Minecraft Connection
 mc = minecraft.Minecraft.create()
+
+# Global Variable for 
+row_complete = 0
         
 class LocationResource (resource.Resource):
 
@@ -34,8 +37,9 @@ class LocationResource (resource.Resource):
         else:
             self.token_id += 1
             
-        self.content = (self.content[0],self.content[1],1+self.content[2], self.token_id)
+        self.content = (1 + self.content[0],self.content[1], self.content[2], self.token_id)
         mc.setBlock(self.content[0], self.content[1], self.content[2], block.DIRT.id)
+        mc.player.setPos(self.content[0], self.content[1], self.content[2])
         mc.postToChat('Block placed at ' + str(self.content[0]) + ' ' + str(self.content[1]) + ' ' + str(self.content[2]))
         print ('Content: {}'.format(self.content))
         payload = pickle.dumps ('POST request received to place block at {}'.format (p))
