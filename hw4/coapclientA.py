@@ -4,6 +4,11 @@ import pickle
 import asyncio
 from aiocoap import *
 import time
+import sys
+
+if (len(sys.argv) != 2):
+    print("usage: minecraft.py <ip address>")
+    sys.exit(2)
 
 async def main():
     protocol = await Context.create_client_context()
