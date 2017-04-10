@@ -14,14 +14,14 @@ mc = minecraft.Minecraft.create()
 # Global Variable for determining if row has been completed 
 row_complete = 0
 
-def mapblock(int blockid):
+def mapblock(blockid):
     if blockid == 0:
         return block.WOOD.id
     elif blockid == 1:
         return block.DIAMOND_BLOCK.id
     elif blockid == 2:
         return block.STONE.id
-    else
+    else:
         return block.DIRT.id
         
 class LocationResource (resource.Resource):
@@ -50,7 +50,7 @@ class LocationResource (resource.Resource):
         global row_complete
         if (self.x <= 10):
             self.content = (1 + self.content[0],self.content[1], self.content[2], self.token_id, self.x)
-            mc.setBlock(self.content[0], self.content[1], self.content[2], block.DIRT.id)
+            mc.setBlock(self.content[0], self.content[1], self.content[2], mapblock(self.token_id))
             mc.player.setPos(self.content[0], self.content[1], self.content[2])
             mc.postToChat('Block placed at ' + str(self.content[0]) + ' ' + str(self.content[1]) + ' ' + str(self.content[2]))
             print ('Content: {}'.format(self.content))
@@ -60,7 +60,7 @@ class LocationResource (resource.Resource):
             self.x = 1
             row_complete += 1
             self.content = (self.content[0] - 9, 1 + self.content[1], self.content[2], self.token_id, self.content[4])
-            mc.setBlock(self.content[0], self.content[1], self.content[2], block.DIRT.id)
+            mc.setBlock(self.content[0], self.content[1], self.content[2], mapblock(self.token_id))
             mc.player.setPos(self.content[0], self.content[1], self.content[2])
             mc.postToChat('Block placed at ' + str(self.content[0]) + ' ' + str(self.content[1]) + ' ' + str(self.content[2]))
             print ('Content: {}'.format(self.content))
