@@ -13,9 +13,12 @@ mc = minecraft.Minecraft.create()
         
 class LocationResource (resource.Resource):
 
+    token_id = 0
+
     def __init__(self):
         super(LocationResource, self).__init__()
-        self.content = (0,0,0)
+        self.content = (0,0,0,0)
+
 
     async def render_get (self, request):
         self.content = tuple(mc.player.getPos())
@@ -25,7 +28,13 @@ class LocationResource (resource.Resource):
     async def render_post (self, request):
         p = pickle.loads (request.payload)
         print ('POST: {}'.format (p))
-        self.content = (0,0,1+self.content[2])
+
+        if self.token_id > 3:
+            self.token_id = 0
+        else:
+            self.token_id += 1
+
+        self.content = (0,0,1+self.content[2],self.token_id)
         mc.setBlock(self.content[0], self.content[1], self.content[2],block.DIRT.id)
         print ('Content: {}'.format(self.content))
         payload = pickle.dumps ('POST request received to place block at {}'.format (p))
