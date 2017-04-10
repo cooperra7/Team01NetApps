@@ -4,7 +4,13 @@ import aiocoap
 import asyncio
 import aiocoap.resource as resource
 import pickle
+import sys
+import mcpi.minecraft as minecraft
+import mcpi.block as block
 
+#Global Variable for Minecraft Connection
+mc = minecraft.Minecraft.create()
+        
 class LocationResource (resource.Resource):
 
     def __init__(self):
@@ -12,6 +18,7 @@ class LocationResource (resource.Resource):
         self.content = (0,0,0)
 
     async def render_get (self, request):
+        self.content = tuple(mc.player.getPos())
         g = pickle.dumps (self.content)
         return aiocoap.Message(payload=g)
 
@@ -19,11 +26,13 @@ class LocationResource (resource.Resource):
         p = pickle.loads (request.payload)
         print ('POST: {}'.format (p))
         self.content = (0,0,1+self.content[2])
+        mc.setBlock(self.content[0], self.content[1], self.content[2],block.DIRT.id)
         print ('Content: {}'.format(self.content))
         payload = pickle.dumps ('POST request received to place block at {}'.format (p))
         return aiocoap.Message (payload=payload)
 
 def main ():
+
     root = resource.Site()
     root.add_resource (('location',), LocationResource())
 
