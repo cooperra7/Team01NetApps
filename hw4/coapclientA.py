@@ -15,7 +15,7 @@ async def main():
 
     while (1):
         time.sleep(1)
-        getRequest = Message (code=GET, uri='coap://localhost/location')
+        getRequest = Message(code=GET, uri='coap://' + sys.argv[1] + '/location')
 
         try:
             response = await protocol.request(getRequest).response
