@@ -29,7 +29,7 @@ class LocationResource (resource.Resource):
         p = pickle.loads (request.payload)
         print ('POST: {}'.format (p))
 
-        if self.token_id > 3:
+        if self.token_id > 2:
             self.token_id = 0
         else:
             self.token_id += 1
