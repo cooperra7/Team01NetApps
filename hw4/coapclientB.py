@@ -38,7 +38,10 @@ async def main():
                     print('Failed to POST {}'.format(newLoc))
                     print('Failure.  Exception: {}'.format(e))
                 else:
-                    print('SUCCESS: {}'.format(pickle.loads(postresponse.payload)))
+                    resp = pickle.loads(postresponse.payload)
+                    print ('SUCCESS: {}'.format(resp))
+                    if (resp == "Wall is done"):
+                        sys.exit(0)
 
 
 if __name__ == "__main__":
