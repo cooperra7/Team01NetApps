@@ -30,7 +30,7 @@ async def main():
                 newLoc = (r[0], r[1], r[2], token_id, x)
                 postPayload = pickle.dumps(newLoc)
                 postRequest = Message(code=POST, payload=postPayload)
-                postRequest.opt.uri_host = 'localhost'
+                postRequest.opt.uri_host = sys.argv[1]
                 postRequest.opt.uri_path = ('location',)
                 try:
                     postresponse = await protocol.request(postRequest).response
