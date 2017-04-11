@@ -7,6 +7,8 @@ import pickle
 import sys
 import mcpi.minecraft as minecraft
 import mcpi.block as block
+import RPi.GPIO as GPIO
+import time
 
 # Global Variable for Minecraft Connection
 mc = minecraft.Minecraft.create()
@@ -47,6 +49,22 @@ class LocationResource (resource.Resource):
         else:
             self.token_id += 1
         self.x += 1
+        
+        if (self.token_id == 0):
+            GPIO.output(25, GPIO.HIGH)
+            GPIO.output(24, GPIO.LOW)
+            GPIO.output(23, GPIO.LOW)
+        elif (self.token_id == 1):
+            GPIO.output(23, GPIO.HIGH)
+            GPIO.output(25, GPIO.LOW)
+            GPIO.output(24, GPIO.LOW)
+        elif (self.token_id == 2):
+            GPIO.output(24, GPIO.HIGH)
+            GPIO.output(25, GPIO.LOW)
+            GPIO.output(23, GPIO.LOW)
+        else:
+            print ("TOKEN ERROR")
+        
         global row_complete
         if (self.x <= 10):
             self.content = (1 + self.content[0],self.content[1], self.content[2], self.token_id, self.x)
@@ -72,7 +90,13 @@ class LocationResource (resource.Resource):
             return aiocoap.Message (payload=payload)
 
 def main ():
-
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
+    GPIO.setup(25, GPIO.OUT)
+    GPIO.setup(24, GPIO.OUT)
+    GPIO.setup(23, GPIO.OUT)
+    
+    
     root = resource.Site()
     root.add_resource (('location',), LocationResource())
 
