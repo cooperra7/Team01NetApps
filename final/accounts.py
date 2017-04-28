@@ -15,6 +15,9 @@ class Accounts(object):
 
     def pay(self, ch, method, properties, body):
         print ('Pay')
+        ch.basic_publish(exchange='', routing_key=properties.reply_to,
+                                properties=pika.BasicProperties(correlation_id = properties.correlation_id),
+                                body = pickle.dumps('Payment received'))
 
     def callback (self, ch, method, properties, body):
         mess = pickle.loads (body)
@@ -37,7 +40,7 @@ class Accounts(object):
         self.connection = pika.BlockingConnection (params)
         self.channel = self.connection.channel()
 #        self.channel.exchange_declare (exchange = 'smartgroceries', type='direct')
-        result = self.channel.queue_declare (queue='rpc_queue', exclusive=True)
+        result = self.channel.queue_declare (queue='accounts', exclusive=True)
         self.qname = result.method.queue
 
 #        self.channel.queue_bind (exchange='smartgroceries', queue=qname, routing_keys='accounts')

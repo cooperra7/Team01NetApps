@@ -27,18 +27,28 @@ class Client (object):
         tosend = pickle.dumps(tojson)
         self.response = None
         self.corr_id = str(uuid.uuid4())
-        self.channel.basic_publish(exchange='',
-                                   routing_key='rpc_queue',
+        if (n["type"] == "register" or n["type"] == "pay"):
+            self.channel.basic_publish(exchange='',
+                                   routing_key='accounts',
                                    properties=pika.BasicProperties(
                                          reply_to = self.callback_queue,
                                          correlation_id = self.corr_id,
                                          ),
                                    body=tosend)
+        else:
+            self.channel.basic_publish(exchange='',
+                                   routing_key='recipe',
+                                   properties=pika.BasicProperties(
+                                         reply_to = self.callback_queue,
+                                         correlation_id = self.corr_id,
+                                         ),
+                                   body=tosend)
+            
         while self.response is None:
             self.connection.process_data_events()
         return pickle.loads(self.response)
 
 myclient = Client()
 
-response = myclient.call({"type" : "register"})
+response = myclient.call({"type" : "pay"})
 print(" [.] Got %r" % response)
