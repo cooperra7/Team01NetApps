@@ -29,7 +29,7 @@ class Recipe(object):
             )
         ch.basic_publish(exchange='', routing_key=properties.reply_to,
                          properties=pika.BasicProperties(correlation_id=properties.correlation_id),
-                         body=pickle.dumps(response))
+                         body=pickle.dumps(response.json()))
 
     def callback (self, ch, method, properties, body):
         mess = pickle.loads (body)
