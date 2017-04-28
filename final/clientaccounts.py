@@ -50,5 +50,7 @@ class Client (object):
 
 myclient = Client()
 
-response = myclient.call({"type" : "pay"})
+response = myclient.call({"type" : "recipe"})
 print(" [.] Got %r" % response)
+#response = myclient.call({"type" : "register"})
+#print(" [.] Got %r" % response)

@@ -35,7 +35,7 @@ class Recipe(object):
         mess = pickle.loads (body)
         obj = json.loads(mess)
         if (obj['type'] == "recipe"):
-            self.register(ch, method, properties, body)
+            self.recipe(ch, method, properties, body)
         else:
             print ('Not Valid')
 
@@ -50,7 +50,7 @@ class Recipe(object):
         self.connection = pika.BlockingConnection(params)
         self.channel = self.connection.channel()
         #        self.channel.exchange_declare (exchange = 'smartgroceries', type='direct')
-        result = self.channel.queue_declare(queue='rpc_queue', exclusive=True)
+        result = self.channel.queue_declare(queue='recipe', exclusive=True)
         self.qname = result.method.queue
 
         #        self.channel.queue_bind (exchange='smartgroceries', queue=qname, routing_keys='accounts')
