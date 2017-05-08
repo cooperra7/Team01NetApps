@@ -11,7 +11,9 @@ class Recipe(object):
 
     def recipe(self, ch, method, properties, body):
         print('Recipe')
-        ingredients = 'apples'
+	temp = json.loads(body)
+        ingredients = temp['item']
+	
         number = '10'
 
         response = requests.get("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/findByIngredients?",
@@ -44,7 +46,7 @@ class Recipe(object):
         self.db = self.client.accounts
 
         vhost = '/'
-        mbservip = 'localhost'
+        mbservip = sys.argv[1]
         creds = pika.PlainCredentials('guest', 'guest')
         params = pika.ConnectionParameters(virtual_host=vhost, credentials=creds, host=mbservip)
         self.connection = pika.BlockingConnection(params)
