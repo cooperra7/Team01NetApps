@@ -16,12 +16,15 @@ class Recipe(object):
 		ingredients = ''
 		price = ''
 		if (id == '1010'):
+			print('apple')
 			ingredients = "apple"
 			price = 1
 		if (id == '1009'):
+			print('orange')
 			ingredients = "orange"
 			price = 100
 		if (id == '1012'):
+			print('carrot')
 			ingredients = "carrot"
 			price = 1000000
 		number = '1'
