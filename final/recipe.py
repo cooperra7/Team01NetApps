@@ -14,12 +14,16 @@ class Recipe(object):
 		temp = json.loads(pickle.loads(body))
 		id = temp['id']
 		ingredients = ''
+		price = ''
 		if (id == 1010):
 			ingredients = "apple"
+			price = 1
 		if (id == 1009):
 			ingredients = "orange"
+			price = 100
 		if (id == 1012):
 			ingredients = "carrot"
+			price = 1000000
 		number = '1'
 		self.db.inventory.update({"id":id}, {"$inc":{"number":-1}})
 
@@ -36,9 +40,10 @@ class Recipe(object):
 			'ranking': '1'
 		    }
 		    )
+		data = (price, response.json())
 		ch.basic_publish(exchange='', routing_key=properties.reply_to,
 				 properties=pika.BasicProperties(correlation_id=properties.correlation_id),
-				 body=pickle.dumps(response.json()))
+				 body=pickle.dumps(json.dumps(data)))
 
 	def callback (self, ch, method, properties, body):
 		mess = pickle.loads (body)
