@@ -24,9 +24,10 @@ def user_login():
     print(username)
     print(password)
     myclient = Client()
-    response = myclient.call({"type" : "login", "email" : username, "password" : password})
-    print(response)
-    return response
+    toresponse = myclient.call({"type" : "login", "email" : username, "password" : password})
+    response = json.loads(toresponse)
+    print(response['reply'])
+    return response['reply']
     
 
 @app.route('/get_recipe', methods=['GET'])
@@ -36,23 +37,29 @@ def item_pickup():
     item = request.args.get('minor')
     myclient = Client()
     recipe_response = json.loads(myclient.call({"type" : "recipe", "id" : item}))
-    print(recipe_response)
+    #cost = 100
     cost = recipe_response[0]
     print(cost)
     recipe = recipe_response[1]
+    recipe = recipe[0]
     print(recipe)                              
-    total = myclient.call({"type" : "pay", "email" : username, "password" : password, "price" : cost})
-    print(total)
-    return json.dumps(recipe)
+    tototal = myclient.call({"type" : "pay", "email" : username, "password" : password, "price" : cost})
+    total = json.loads(tototal)
+    print(total['reply'])
+    print(recipe['title'])
+    print(recipe['image'])
+    #return json.dumps({"pay_response" : total['reply'], "title" : 'Cranberry Orange Relish', "image" : 'https://spoonacular.com/recipeImages/Cranberry-Orange-Relish-640400.jpg' })
+    return json.dumps({"pay_response" : total['reply'], "title" : recipe['title'], "image" : recipe['image'] })
 
 @app.route('/get_pay_request', methods=['GET'])
 def checkout():
     username = request.args.get('username')
     password = request.args.get('password')
     myclient = Client()
-    response = myclient.call({"type" : "checkout", "email" : username, "password" : password})
-    print(response)
-    return response
+    toresponse = myclient.call({"type" : "checkout", "email" : username, "password" : password})
+    response = json.loads(toresponse)
+    print(response['reply'])
+    return str(response['reply'])
 
 
 class Client (object):
