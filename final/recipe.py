@@ -11,10 +11,17 @@ class Recipe(object):
 
     def recipe(self, ch, method, properties, body):
         print('Recipe')
-	temp = json.loads(body)
-        ingredients = temp['item']
-	
-        number = '10'
+	temp = json.loads(pickle.loads(body))
+	id = temp['id']
+	ingredients = ''
+	if (id == 1010)
+		ingredients = "apple"
+	if (id == 1009)
+        	ingredients = "orange"
+	if (id == 1012)
+		ingredients = "carrot"
+        number = '1'
+	self.db.inventory.update({"id":id}, {"$inc":{"number":-1}})
 
         response = requests.get("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/findByIngredients?",
             headers={
@@ -43,7 +50,15 @@ class Recipe(object):
 
     def __init__(self):
         self.client = MongoClient('localhost', 27017)
-        self.db = self.client.accounts
+        self.db = self.client.inventory_db
+	self.db = MongoClient().inventory_db
+	apples = {"item":"Apple", "id":1010, "number":5, "price":1}
+	oranges = {"item":"Orange", "id":1009, "number":100, "price":100}
+	carrots = {"item":"Carrot", "id":1012, "number":1000000, "price":1000000}
+
+	self.db.inventory.insert(apples)
+	self.db.inventory.insert(oranges)
+	self.db.inventory.insert(carrots)
 
         vhost = '/'
         mbservip = sys.argv[1]
