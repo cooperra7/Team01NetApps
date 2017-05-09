@@ -14,11 +14,11 @@ class Recipe(object):
 		temp = json.loads(pickle.loads(body))
 		id = temp['id']
 		ingredients = ''
-		if (id == 1010)
+		if (id == 1010):
 			ingredients = "apple"
-		if (id == 1009)
+		if (id == 1009):
 			ingredients = "orange"
-		if (id == 1012)
+		if (id == 1012):
 			ingredients = "carrot"
 		number = '1'
 		self.db.inventory.update({"id":id}, {"$inc":{"number":-1}})
