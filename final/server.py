@@ -21,8 +21,11 @@ def index():
 def user_login():
     username = request.args.get('username')
     password = request.args.get('password')
+    print(username)
+    print(password)
     myclient = Client()
     response = myclient.call({"type" : "login", "email" : username, "password" : password})
+    print(response)
     return response
     
 
@@ -31,23 +34,31 @@ def item_pickup():
     username = request.args.get('username')
     password = request.args.get('password')
     item = request.args.get('minor')
-    recipe_response = myclient.call({"type" : "recipe", "id" : item)
-                                    
-    total = myclient.call({"type" : "pay", "email" : username, "password" : password})
-    
+    myclient = Client()
+    recipe_response = json.loads(myclient.call({"type" : "recipe", "id" : item}))
+    print(recipe_response)
+    cost = recipe_response[0]
+    print(cost)
+    recipe = recipe_response[1]
+    print(recipe)                              
+    total = myclient.call({"type" : "pay", "email" : username, "password" : password, "price" : cost})
+    print(total)
+    return json.dumps(recipe)
 
-@app.route('/checkout', methods=['GET'])
+@app.route('/get_pay_request', methods=['GET'])
 def checkout():
     username = request.args.get('username')
     password = request.args.get('password')
+    myclient = Client()
     response = myclient.call({"type" : "checkout", "email" : username, "password" : password})
+    print(response)
     return response
 
 
 class Client (object):
 
     def __init__(self):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host='172.29.103.109'))
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host='172.29.103.173'))
 
         self.channel = self.connection.channel()
 
@@ -66,7 +77,7 @@ class Client (object):
         tosend = pickle.dumps(tojson)
         self.response = None
         self.corr_id = str(uuid.uuid4())
-        if (n["type"] == "login" or n["type"] == "pay" or n["type"] == "checkout")):
+        if (n["type"] == "login" or n["type"] == "pay" or n["type"] == "checkout"):
             self.channel.basic_publish(exchange='',
                                    routing_key='accounts',
                                    properties=pika.BasicProperties(
