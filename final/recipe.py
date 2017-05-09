@@ -15,13 +15,13 @@ class Recipe(object):
 		id = temp['id']
 		ingredients = ''
 		price = ''
-		if (id == 1010):
+		if (id == '1010'):
 			ingredients = "apple"
 			price = 1
-		if (id == 1009):
+		if (id == '1009'):
 			ingredients = "orange"
 			price = 100
-		if (id == 1012):
+		if (id == '1012'):
 			ingredients = "carrot"
 			price = 1000000
 		number = '1'
@@ -40,6 +40,7 @@ class Recipe(object):
 			'ranking': '1'
 		    }
 		    )
+		print(response.json())
 		data = (price, response.json())
 		ch.basic_publish(exchange='', routing_key=properties.reply_to,
 				 properties=pika.BasicProperties(correlation_id=properties.correlation_id),
